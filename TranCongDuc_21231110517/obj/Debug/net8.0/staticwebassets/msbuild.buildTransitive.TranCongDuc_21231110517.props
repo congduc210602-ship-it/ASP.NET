@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\TranCongDuc_21231110517.props" />
-</Project>
