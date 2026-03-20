@@ -1,19 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 namespace TranCongDuc_21231110517.Models
 {
-    public class Category
+    public class Customer
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
+        [StringLength(20)]
+        public string Phone { get; set; } = string.Empty;
+
+        [Required]
         [StringLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        [StringLength(500)]
-        public string? Avatar { get; set; }
-
-        // Hỗ trợ EF Core lấy danh sách các món thuộc danh mục này
-        public ICollection<Product>? Products { get; set; }
+        public int Points { get; set; } = 0;
     }
 }

@@ -1,5 +1,13 @@
+﻿using Microsoft.EntityFrameworkCore;
+using TranCongDuc_21231110517.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
+
+// ??ng ký SQL Server
+builder.Services.AddDbContext<AppDbContext>(options =>
+
+options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 // Add services to the container.
 
 builder.Services.AddControllers();
