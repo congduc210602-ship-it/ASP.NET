@@ -80,7 +80,7 @@ namespace TranCongDuc_21231110517.Controllers
 
                 decimal itemTotal = variant.Price * item.Quantity;
 
-                // Tính tiền Topping (Giống hệt logic cũ của chúng ta)
+                // Tính tiền Topping
                 if (!string.IsNullOrEmpty(item.Toppings))
                 {
                     try
@@ -128,6 +128,50 @@ namespace TranCongDuc_21231110517.Controllers
                 invoiceCode = newOrder.InvoiceCode,
                 totalAmount = newOrder.TotalAmount
             });
+        }
+
+        // ==========================================
+        // API MỚI: XEM LỊCH SỬ ĐƠN HÀNG
+        // ==========================================
+        // GET: api/customer/orders/history/1
+        [HttpGet("history/{customerId}")]
+        public async Task<IActionResult> GetOrderHistory(int customerId)
+        {
+            // Tìm tất cả đơn hàng của ông khách này, sắp xếp đơn mới nhất lên đầu
+            var orders = await _context.Orders
+                .Include(o => o.Store) // Lấy thông tin chi nhánh
+                .Include(o => o.OrderDetails!) // Lấy danh sách món
+                    .ThenInclude(od => od.ProductVariant!)
+                        .ThenInclude(pv => pv.Product) // Lấy tên món ăn gốc
+                .Where(o => o.CustomerId == customerId)
+                .OrderByDescending(o => o.CreatedAt)
+                .Select(o => new
+                {
+                    o.Id,
+                    o.InvoiceCode,
+                    o.OrderType,
+                    o.Status,
+                    o.TotalAmount,
+                    o.CreatedAt,
+                    StoreName = o.Store != null ? o.Store.Name : "",
+                    // Định dạng lại chi tiết món ăn cho App dễ hiển thị
+                    Items = o.OrderDetails!.Select(od => new
+                    {
+                        ProductName = od.ProductVariant!.Product!.Name,
+                        Size = od.ProductVariant.Size,
+                        Quantity = od.Quantity,
+                        Price = od.PriceAtTime,
+                        Toppings = od.Toppings
+                    })
+                })
+                .ToListAsync();
+
+            if (!orders.Any())
+            {
+                return NotFound(new { message = "Khách hàng này chưa có lịch sử đặt hàng." });
+            }
+
+            return Ok(orders);
         }
     }
 }

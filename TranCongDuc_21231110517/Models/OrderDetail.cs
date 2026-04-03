@@ -28,5 +28,8 @@ namespace TranCongDuc_21231110517.Models
 
         [ForeignKey("OrderId")]
         public Order? Order { get; set; }
+
+        [ForeignKey("ProductVariantId")]
+        public ProductVariant? ProductVariant { get; set; }
     }
 }
