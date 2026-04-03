@@ -16,5 +16,15 @@ namespace TranCongDuc_21231110517.Models
         public string Name { get; set; } = string.Empty;
 
         public int Points { get; set; } = 0;
+
+        // Bổ sung cho Web
+        [StringLength(100)]
+        public string? Email { get; set; }
+
+        [StringLength(255)]
+        public string? Password { get; set; }
+
+        [StringLength(255)]
+        public string? Address { get; set; }
     }
 }

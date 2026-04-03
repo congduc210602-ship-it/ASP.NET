@@ -15,9 +15,11 @@ base(options)
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
-        public DbSet<Table> Tables { get; set; }
         public DbSet<Topping> Toppings { get; set; }
         public DbSet<User> Users { get; set; }
+
+        public DbSet<Store> Stores { get; set; }
+        public DbSet<Banner> Banners { get; set; }
 
     }
 }

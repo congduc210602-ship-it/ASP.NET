@@ -2,17 +2,22 @@
 
 namespace TranCongDuc_21231110517.Models
 {
-    public class Table
+    public class Store
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(150)]
         public string Name { get; set; } = string.Empty;
 
         [Required]
+        [StringLength(255)]
+        public string Address { get; set; } = string.Empty;
+
         [StringLength(20)]
-        public string Status { get; set; } = "empty";
+        public string Phone { get; set; } = string.Empty;
+
+        public bool IsActive { get; set; } = true;
     }
 }
