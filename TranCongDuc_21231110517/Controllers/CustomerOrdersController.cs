@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using TranCongDuc_21231110517.Data;
 using TranCongDuc_21231110517.Models;
-
+using Microsoft.AspNetCore.Authorization;
 namespace TranCongDuc_21231110517.Controllers
 {
     // Đổi Route chuẩn theo tài liệu Đặc tả Nhóm 2
@@ -38,6 +38,7 @@ namespace TranCongDuc_21231110517.Controllers
             public string? Note { get; set; }
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] OrderRequestDTO request)
         {
@@ -134,6 +135,8 @@ namespace TranCongDuc_21231110517.Controllers
         // API MỚI: XEM LỊCH SỬ ĐƠN HÀNG
         // ==========================================
         // GET: api/customer/orders/history/1
+
+        [Authorize]
         [HttpGet("history/{customerId}")]
         public async Task<IActionResult> GetOrderHistory(int customerId)
         {
