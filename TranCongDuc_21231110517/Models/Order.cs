@@ -40,7 +40,7 @@ namespace TranCongDuc_21231110517.Models
         [StringLength(20)]
         public string? PaymentMethod { get; set; } // cod, vnpay
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // --- Các khóa ngoại liên kết ---
         [ForeignKey("CustomerId")]

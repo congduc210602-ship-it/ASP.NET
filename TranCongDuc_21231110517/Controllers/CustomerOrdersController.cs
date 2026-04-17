@@ -59,7 +59,7 @@ namespace TranCongDuc_21231110517.Controllers
                 DeliveryAddress = request.DeliveryAddress,
                 PaymentMethod = request.PaymentMethod,
                 Status = "pending", // Đơn mới luôn là pending
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 OrderDetails = new List<OrderDetail>() // Chuẩn bị sẵn giỏ để đựng món
             };
 
