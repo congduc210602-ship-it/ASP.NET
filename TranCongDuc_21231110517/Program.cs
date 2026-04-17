@@ -24,6 +24,17 @@ builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()   // Cho phép mọi Frontend (localhost, domain khác) gọi tới
+                  .AllowAnyMethod()   // Cho phép mọi method (GET, POST, PUT, DELETE)
+                  .AllowAnyHeader();  // Cho phép mọi header (bao gồm cả gửi Token)
+        });
+});
+
 // --- BẮT ĐẦU THÊM CẤU HÌNH JWT ---
 var jwtKey = builder.Configuration["Jwt:Key"];
 var keyBytes = Encoding.UTF8.GetBytes(jwtKey!);
@@ -90,6 +101,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
