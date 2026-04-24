@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 namespace TranCongDuc_21231110517.Models
 {
     public class Product
@@ -19,9 +20,17 @@ namespace TranCongDuc_21231110517.Models
 
         public string? Description { get; set; }
 
+        // ====== THÊM 2 TRƯỜNG NÀY ======
+        [Required]
+        [Column(TypeName = "decimal(18,2)")] // Định dạng tiền tệ
+        public decimal Price { get; set; } = 0;
+
+        [Required]
+        public int Availability { get; set; } = 0;
+        // ===============================
+
         public bool IsActive { get; set; } = true;
 
-        // Khóa ngoại liên kết tới bảng Category (Navigation Property)
         [ForeignKey("CategoryId")]
         public Category? Category { get; set; }
     }
