@@ -94,25 +94,22 @@ namespace TranCongDuc_21231110517.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("Vui lòng chọn một file ảnh.");
 
-            // Lấy đường dẫn thư mục wwwroot, nếu không có thì tự tạo
-            string webRootPath = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-            string uploadsFolder = Path.Combine(webRootPath, "images");
+            // Lưu thẳng vào thư mục "uploads" ngang hàng với Program.cs
+            string uploadsFolder = Path.Combine(_env.ContentRootPath, "uploads");
 
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
-            // Tạo tên file ngẫu nhiên để không bị trùng (tránh việc upload 2 file cùng tên)
             string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
             string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-            // Lưu file vào thư mục
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(fileStream);
             }
 
-            // Trả về URL để bạn copy dán vào cột Avatar của Products hoặc Banners
-            string imageUrl = "/images/" + uniqueFileName;
+            // Trả về URL để Frontend lưu vào DB (ví dụ: /uploads/abc.jpg)
+            string imageUrl = "/uploads/" + uniqueFileName;
             return Ok(new { message = "Upload thành công!", url = imageUrl });
         }
     }
