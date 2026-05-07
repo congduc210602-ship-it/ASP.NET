@@ -71,12 +71,12 @@ namespace TranCongDuc_21231110517.Controllers
                 // Tìm món ăn trong DB kèm theo thông tin gốc của nó
                 var variant = await _context.ProductVariants
                                     .Include(v => v.Product)
-                                    .FirstOrDefaultAsync(v => v.Id == item.ProductVariantId);
+                                    .FirstOrDefaultAsync(v => v.ProductId == item.ProductVariantId); // ĐÃ SỬA: v.ProductId
 
                 // Ngoại lệ 2: Kiểm tra món ăn có bị khóa/hết hàng không?
                 if (variant == null || variant.Product == null || !variant.Product.IsActive)
                 {
-                    return BadRequest($"Lỗi: Món ăn (Size ID: {item.ProductVariantId}) đã ngừng bán!");
+                    return BadRequest($"Lỗi: Món ăn (Mã SP: {item.ProductVariantId}) chưa được tạo Size hoặc đã ngừng bán!");
                 }
 
                 decimal itemTotal = variant.Price * item.Quantity;
@@ -108,7 +108,7 @@ namespace TranCongDuc_21231110517.Controllers
                 // Gói món ăn bỏ vào Hóa đơn, CHỐT GIÁ tại thời điểm này
                 newOrder.OrderDetails.Add(new OrderDetail
                 {
-                    ProductVariantId = item.ProductVariantId,
+                    ProductVariantId = variant.Id, // ĐÃ SỬA: Lấy Id thật sự của Variant trong DB
                     Quantity = item.Quantity,
                     PriceAtTime = variant.Price,
                     Toppings = item.Toppings,
