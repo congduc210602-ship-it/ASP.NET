@@ -112,5 +112,43 @@ namespace TranCongDuc_21231110517.Controllers
             string imageUrl = "/uploads/" + uniqueFileName;
             return Ok(new { message = "Upload thành công!", url = imageUrl });
         }
+        // ==========================================
+        // 5. THỐNG KÊ KHÁCH HÀNG (SỐ ĐƠN & TỔNG CHI)
+        // ==========================================
+        public class CustomerStatDto
+        {
+            public int Id { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public string? Email { get; set; }
+            public string? Phone { get; set; }
+            public int Points { get; set; }
+            public int TotalOrders { get; set; }
+            public decimal TotalSpent { get; set; }
+        }
+
+        [HttpGet("customers/stats")]
+        public async Task<IActionResult> GetCustomerStats()
+        {
+            var stats = await _context.Customers
+                .Select(c => new CustomerStatDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Email = c.Email,
+                    Phone = c.Phone,
+                    Points = c.Points,
+                    // Đếm tổng số đơn hàng của khách này
+                    TotalOrders = _context.Orders.Count(o => o.CustomerId == c.Id),
+                    // Tính tổng tiền khách đã chi (chỉ tính đơn "completed")
+                    TotalSpent = _context.Orders
+                        .Where(o => o.CustomerId == c.Id && o.Status == "completed")
+                        .Sum(o => (decimal?)o.TotalAmount) ?? 0
+                })
+                .OrderByDescending(c => c.TotalSpent) // Khách chi nhiều nhất lên đầu
+                .ToListAsync();
+
+            return Ok(stats);
+        }
+
     }
 }
