@@ -68,20 +68,39 @@ namespace TranCongDuc_21231110517.Controllers
             // 3. Xử lý từng món trong giỏ hàng khách gửi lên
             foreach (var item in request.Items)
             {
-                // Tìm món ăn trong DB kèm theo thông tin gốc của nó
+                // Tìm Size mặc định của món ăn
                 var variant = await _context.ProductVariants
                                     .Include(v => v.Product)
-                                    .FirstOrDefaultAsync(v => v.ProductId == item.ProductVariantId); // ĐÃ SỬA: v.ProductId
+                                    .FirstOrDefaultAsync(v => v.ProductId == item.ProductVariantId);
 
-                // Ngoại lệ 2: Kiểm tra món ăn có bị khóa/hết hàng không?
+                // 🔥 THỦ THUẬT AUTO-FIX: Nếu Database quên chưa tạo Size cho món này, C# sẽ tự động tạo giúp!
+                if (variant == null)
+                {
+                    var prod = await _context.Products.FindAsync(item.ProductVariantId);
+                    if (prod != null && prod.IsActive)
+                    {
+                        variant = new ProductVariant
+                        {
+                            ProductId = prod.Id,
+                            Size = "Mặc định", // Tự động tạo size
+                            Price = prod.Price // Bê nguyên giá từ bảng Product sang
+                        };
+                        _context.ProductVariants.Add(variant);
+                        await _context.SaveChangesAsync(); // Lưu ngay vào Database
+
+                        variant.Product = prod; // Gắn lại để bước dưới không bị lỗi
+                    }
+                }
+
+                // Ngoại lệ 2: Kiểm tra lại lần cuối
                 if (variant == null || variant.Product == null || !variant.Product.IsActive)
                 {
-                    return BadRequest($"Lỗi: Món ăn (Mã SP: {item.ProductVariantId}) chưa được tạo Size hoặc đã ngừng bán!");
+                    return BadRequest($"Lỗi: Món ăn (Mã SP: {item.ProductVariantId}) không tồn tại hoặc đã ngừng bán!");
                 }
 
                 decimal itemTotal = variant.Price * item.Quantity;
 
-                // Tính tiền Topping
+                // Tính tiền Topping (Giữ nguyên)
                 if (!string.IsNullOrEmpty(item.Toppings))
                 {
                     try
@@ -105,10 +124,10 @@ namespace TranCongDuc_21231110517.Controllers
 
                 totalAmount += itemTotal;
 
-                // Gói món ăn bỏ vào Hóa đơn, CHỐT GIÁ tại thời điểm này
+                // Gói món ăn bỏ vào Hóa đơn
                 newOrder.OrderDetails.Add(new OrderDetail
                 {
-                    ProductVariantId = variant.Id, // ĐÃ SỬA: Lấy Id thật sự của Variant trong DB
+                    ProductVariantId = variant.Id, // Bây giờ variant.Id chắc chắn đã có!
                     Quantity = item.Quantity,
                     PriceAtTime = variant.Price,
                     Toppings = item.Toppings,
