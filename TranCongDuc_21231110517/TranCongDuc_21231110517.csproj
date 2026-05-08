@@ -23,7 +23,9 @@
 		    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" /><PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
 		    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 		 
-	</ItemGroup>
+	</ItemGroup><ItemGroup>
+  <Folder Include="wwwroot\uploads\" />
+</ItemGroup>
 
 	  
 
