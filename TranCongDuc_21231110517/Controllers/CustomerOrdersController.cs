@@ -93,10 +93,13 @@ namespace TranCongDuc_21231110517.Controllers
                 }
 
                 // Ngoại lệ 2: Kiểm tra lại lần cuối
-                if (variant == null || variant.Product == null || !variant.Product.IsActive)
+                if (variant.Product.Availability < item.Quantity)
                 {
-                    return BadRequest($"Lỗi: Món ăn (Mã SP: {item.ProductVariantId}) không tồn tại hoặc đã ngừng bán!");
+                    return BadRequest($"Lỗi: Món {variant.Product.Name} chỉ còn {variant.Product.Availability} ly trong kho, không đủ số lượng bạn đặt!");
                 }
+
+                // Thực hiện trừ đi số lượng khách mua
+                variant.Product.Availability -= item.Quantity;
 
                 decimal itemTotal = variant.Price * item.Quantity;
 
